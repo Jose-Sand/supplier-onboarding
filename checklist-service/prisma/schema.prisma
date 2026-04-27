@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Checklist {
+  id          String   @id @default(uuid())
+  supplierId  String
+  title       String
+  description String?
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tasks       Task[]
+}
+
+model Task {
+  id          String    @id @default(uuid())
+  checklistId String
+  title       String
+  description String?
+  required    Boolean   @default(true)
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  checklist   Checklist @relation(fields: [checklistId], references: [id])
+}

@@ -1,0 +1,32 @@
+# docker-compose.override.yml — desarrollo local
+# Se aplica automáticamente sobre docker-compose.yml cuando se corre
+# `docker compose up`. No usar en producción.
+
+services:
+  checklist-service:
+    build:
+      target: builder          # usa el stage builder con devDependencies
+    environment:
+      NODE_ENV: development
+    command: npm run dev
+    volumes:
+      - ./checklist-service:/app   # hot reload: sincroniza el código fuente
+      - /app/node_modules          # preserva node_modules del contenedor
+      - /app/src/generated         # preserva el cliente Prisma generado
+    ports:
+      - '3000:3000'
+      - '9229:9229'                # puerto de debug Node.js (--inspect)
+
+  supplier-service:
+    build:
+      target: builder
+    environment:
+      NODE_ENV: development
+    command: npm run dev
+    volumes:
+      - ./supplier-service:/app
+      - /app/node_modules
+      - /app/src/generated
+    ports:
+      - '3001:3001'
+      - '9230:9229'                # debug port (mapped to host 9230 to avoid conflict)
